@@ -7,5 +7,5 @@ module load petsc
 module load cuda
 
 export PETSC_DIR=$PWD 
-export PETSC_ARCH=icc16-impi5-mkl-opt
+export PETSC_ARCH=icc16-impi5-mkl-cuda-dbg
 
