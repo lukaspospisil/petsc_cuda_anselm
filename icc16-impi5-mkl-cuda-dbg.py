@@ -4,74 +4,70 @@ import os
 #  module unload PrgEnv-cray && module load PrgEnv-gnu && module load cudatoolkit
 #
 
-# Get CUDATOOLKIT_HOME from environment
-CUDATOOLKIT_HOME=os.getenv('CUDATOOLKIT_HOME')
-if not CUDATOOLKIT_HOME :
-  raise Exception("CUDATOOLKIT_HOME not defined in the environment. Did you forget to load modules?")
-
-# Get MPICH DIR from the environment (see note below about nvcc)
-CC=os.getenv('CC')
-MPICH_DIR=os.getenv('MPICH_DIR')
-
 configure_options = [
-# On cray cc,CC,ftn are eqivalent to mpicc,mpiCC,mpif90
-# Note that we add some flags, OVERRIDING any existing COPTFLAGS and CXXOPTFLAGS..
-  '--with-cc=cc',
-  '--with-cxx='+CC,
-  '--with-fc=gfortran',
-#  '--with-fc=0',
-
-  'COPTFLAGS=-O3',
-  'CXXOPTFLAGS=-03',
-  'FOPTFLAGS=-03',
-
-  '--with-clib-autodetect=0',
-  '--with-cxxlib-autodetect=0',
-  '--with-fortranlib-autodetect=0',
-
-  '--with-shared-libraries=0',
-#  '--with-debugging=0',
-  '--with-valgrind=0',
-
-#  '--download-mpich=1',
-  '--download-mumps=1',
-#  '--download-ptscotch=1',
-  '--download-metis=1',
-  '--download-parmetis=1',
-#  '--download-scalapack=1',
-  '--with-scalapack=1',
-
-  # Note: this is a batch system, but under the assumption that
-  #       the login nodes are indeed identical to the compute nodes
-  #       (not always true in practice!) then we shouldn't need this
-  #'--with-batch',
-
+  '--configModules=PETSc.Configure',
+  '--optionsModule=config.compilerOptions ',
+  '--CC=mpiicc ',
+  '--CPPFLAGS="-DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX" ',
+  '--CXX=mpiicpc ',
+  '--FC=mpiifort',
+  '--download-cmake',
+  '--download-chaco',
+  '--download-hdf5',
+  '--download-hypre',
+  '--download-metis',
+  '--download-ml',
+  '--download-mumps',
+  '--download-parmetis',
+  '--download-ptscotch',
+  '--download-pastix',
+  '--download-spai',
+  '--download-suitesparse',
+  '--download-superlu',
+  '--download-superlu_dist',
+  '--known-bits-per-byte=8',
+  '--known-level1-dcache-assoc=8',
+  '--known-level1-dcache-linesize=64',
+  '--known-level1-dcache-size=32768',
+  '--known-memcmp-ok=1',
+  '--known-mpi-c-double-complex=1',
+  '--known-mpi-long-double=1',
   '--known-mpi-shared-libraries=1',
-
-  '--with-x=0',
-  #'--with-hwloc=0'
-
-  'PETSC_ARCH=arch-xbull-xc30-anselm-cuda',
-  #'--with-blas-lapack-lib=-L/opt/cray...'
-
-
+  '--known-sizeof-MPI_Comm=4',
+  '--known-sizeof-MPI_Fint=4',
+  '--known-sizeof-char=1',
+  '--known-sizeof-double=8',
+  '--known-sizeof-float=4',
+  '--known-sizeof-int=4',
+  '--known-sizeof-long-long=8',
+  '--known-sizeof-long=8',
+  '--known-sizeof-short=2',
+  '--known-sizeof-size_t=8',
+  '--known-sizeof-void-p=8',
+  '--with-blas-lapack-include=/apps/all/imkl/11.3.1.150-iimpi-2016.01-GCC-4.9.3-2.25/mkl/include ',
+  '--with-blas-lapack-lib="-L/apps/all/imkl/11.3.1.150-iimpi-2016.01-GCC-4.9.3-2.25/mkl/lib/intel64 -lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lm" ',
+  '--with-c2html=0 ',
+  '--with-cxx-dialect=C++11 ',
+  '--with-debugging=1 ',
+  '--with-fortran ',
+  '--with-mpi ',
+  '--with-mpiexec=/apps/intel/impi/4.1.1.036/intel64/bin/mpirun ',
+  '--with-pic ',
+  '--with-scalapack-include=/apps/all/imkl/11.3.1.150-iimpi-2016.01-GCC-4.9.3-2.25/mkl/include ',
+  '--with-scalapack-lib="-L/apps/all/imkl/11.3.1.150-iimpi-2016.01-GCC-4.9.3-2.25/mkl/lib/intel64 -lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lm" ',
+  '--with-shared-libraries ',
+  '--with-valgrind ',
+  '--with-windows-graphics=0 ',
+  '--with-x ',
+  'PETSC_ARCH=icc16-impi5-mkl-cuda-dbg',
+  
+  # cuda fun
   '--with-cuda=1',
   '--with-cuda-arch=sm_35',
-  '--with-cuda-dir='+CUDATOOLKIT_HOME,
+  '--with-cuda-dir=/apps/all/CUDA/7.5/',
   '--with-cudac=nvcc',
-
-  # The cc/CC/ftn compiler wrappers provide
-  # things like MPI headers, but nvcc
-  # doesn't have them, so we add them
-  # manually here:
-  '--CUDAFLAGS=-I'+MPICH_DIR+'/include/',
-  
-#  '--with-batch=1',
-  '--download-f2cblaslapack=1',
-
-#  '-lstdc++',
-
-  ]
+  '--CUDAFLAGS=-I/apps/mpi/impi/5.1.2.150-iccifort-2016.1.150-GCC-4.9.3-2.25/include/',
+]
 
 if __name__ == '__main__':
   import sys,os
