@@ -11,6 +11,7 @@ configure_options = [
 #  '--CPPFLAGS="-DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX" ',
   '--CXX=mpicxx',
   '--FC=mpifort',
+  '--download-cmake',
   '--download-chaco',
   '--download-hdf5',
   '--download-hypre',
