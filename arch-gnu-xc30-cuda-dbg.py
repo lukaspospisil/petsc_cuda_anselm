@@ -7,10 +7,10 @@ import os
 configure_options = [
   '--configModules=PETSc.Configure',
   '--optionsModule=config.compilerOptions ',
-  '--CC=mpiicc ',
+  '--CC=mpicc ',
 #  '--CPPFLAGS="-DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX" ',
   '--CXX=mpicxx',
-  '--FC=mpiifort',
+  '--FC=mpifort',
   '--download-chaco',
   '--download-hdf5',
   '--download-hypre',
@@ -59,6 +59,9 @@ configure_options = [
   '--with-windows-graphics=0 ',
   '--with-x ',
   'PETSC_ARCH=arch-gnu-xc30-cuda-dbg',
+
+  # blas
+  '--download-fblaslapack=1',
   
   # cuda fun
   '--with-cuda=1',
