@@ -3,6 +3,8 @@
 # -DFIND_PETSC=ON			-> use functions from Jed Brown to set Petsc variables (turn off if using Petsc from modules)
 # -DUSE_CUDA=ON				-> compile with GPU
 #
+# on my local with screwed compilers use: cmake -DCMAKE_CXX_COMPILER=/usr/bin/mpicxx -DFIND_PETSC=ON ..
+#
 
 project(PETSC_CUDA_TEST)
 cmake_minimum_required(VERSION 2.8)
@@ -50,13 +52,13 @@ endif()
 if(${BENCHMARK})
 	if(${USE_CUDA})
 		# compile using cuda compiler
-		cuda_add_executable(benchmark benchmark_seq.cu
+		cuda_add_executable(test_cuda test_cuda.cu
 			OPTIONS "-arch=sm_35 --compiler-options \"${CUDA_CXX_FLAGS}\""
 			DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-		target_link_libraries(benchmark ${PETSC_LIBRARIES})
+		target_link_libraries(test_cuda ${PETSC_LIBRARIES})
 	else ()
 		# compile using standart c++ compiler
-		add_executable(benchmark benchmark_seq.cpp)
-		target_link_libraries(benchmark ${PETSC_LIBRARIES})
+		add_executable(test_cuda test_cuda.cpp)
+		target_link_libraries(test_cuda ${PETSC_LIBRARIES})
 	endif ()
 endif()

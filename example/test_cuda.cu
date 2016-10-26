@@ -97,10 +97,7 @@ int main( int argc, char *argv[] )
 	TRY( VecSet(y, 1.0) );
 	
 	/* AXPY */
-	for(i=0;i<n;i++){
-		coeff[i]= 1/(double)(i+1);
-	}
-	TRY( VecMAXPY(y, -3.1, x_global) );
+	TRY( VecAXPY(y, -3.1, x_global) );
 
 	/* dot product */
 	TRY( VecDot(y,x_global, &result) );
