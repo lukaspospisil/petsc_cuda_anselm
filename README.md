@@ -10,7 +10,7 @@ cd build
 cmake -DFIND_PETSC=ON -DUSE_CUDA=ON ..
 make
 ```
-to test openmpi instead of CUDA, compile with `-DCUDA=OFF` and do not forget to set `OMP_NUM_THREADS`
+to test openmpi instead of CUDA, compile with `-DUSE_CUDA=OFF` and do not forget to set `OMP_NUM_THREADS`
 
 for interactive mode, call `qsub example/pbs_script/pbs_interactive2.pbs`
 
