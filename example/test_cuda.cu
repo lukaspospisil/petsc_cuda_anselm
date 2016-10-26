@@ -142,7 +142,7 @@ int main( int argc, char *argv[] )
 
 	TRY( VecCUDARestoreArrayReadWrite(x_global,&x_local_arr) );
 #else
-	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling OpenMPI parfor\n") );
+	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling OpenMP parfor\n") );
 	TRY( VecGetArray(x_global,&x_local_arr) );
 
 	#pragma omp parallel for
