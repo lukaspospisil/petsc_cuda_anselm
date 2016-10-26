@@ -1,6 +1,8 @@
 #
-#
 # this script loads the right modules on IT4I Anselm machine
+# to compile and run example with petsc-cuda support
+#
+# Lukas Pospisil, USI Lugano, 2016
 #
 
 module load GCCcore/4.9.3
@@ -8,15 +10,10 @@ module load MPICH/3.2-GCC-4.9.3-2.25
 module load ifort/2016.1.150-GCC-4.9.3-2.25
 module load binutils/2.25-GCCcore-4.9.3 
 module load Bison/3.0.4-GCCcore-4.9.3
-
+module load cmake
 
 module load cuda
 
-export PETSC_DIR=$PWD 
+# feel free to modify this with your paths
+export PETSC_DIR=/home/pos220/playground/petsc
 export PETSC_ARCH=arch-gnu-xc30-cuda-dbg
-
-
-
-#  1) GCCcore/4.9.3                                       4) ifort/2016.1.150-GCC-4.9.3-2.25                     7) iimpi/2016.01-GCC-4.9.3-2.25                       10) Bison/3.0.4
-#  2) binutils/2.25-GCCcore-4.9.3                         5) iccifort/2016.1.150-GCC-4.9.3-2.25                  8) imkl/11.3.1.150-iimpi-2016.01-GCC-4.9.3-2.25       11) petsc/3.7.3-icc16-impi5-mkl-opt
-#  3) icc/2016.1.150-GCC-4.9.3-2.25                       6) impi/5.1.2.150-iccifort-2016.1.150-GCC-4.9.3-2.25   9) intel/2016.01                                      12) cuda/7.5
