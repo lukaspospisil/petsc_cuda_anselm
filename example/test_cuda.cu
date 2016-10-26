@@ -6,6 +6,22 @@
 #define PRINT_VECTOR_CONTENT 1
 
 #ifdef USE_CUDA
+
+/* this is neccesary for calling VecCUDAGetArrayReadWrite */
+#include <../src/vec/vec/impls/seq/seqcuda/cudavecimpl.h>
+
+/* cuda error check */ 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+	if (code != cudaSuccess) 
+	{
+		fprintf(stderr,"\n\x1B[31mCUDA error:\x1B[0m %s %s \x1B[33m%d\x1B[0m\n\n", cudaGetErrorString(code), file, line);
+		if (abort) exit(code);
+	}
+}
+
+/* kernel called in this example */
 __global__ void this_is_kernel(double *x_local_arr, int idx_start, int n_local){
 	int i = blockIdx.x*blockDim.x + threadIdx.x; /* compute my id */
 
@@ -123,7 +139,7 @@ int main( int argc, char *argv[] )
 	this_is_kernel<<<n_local, 1>>>(x_local_arr,idx_start,n_local); //TODO: compute optimal call
 	gpuErrchk( cudaDeviceSynchronize() ); /* synchronize threads after computation */
 
-	TRY( VecCUDARestoreArrayReadWrite(x_local_global,&x_arr) );
+	TRY( VecCUDARestoreArrayReadWrite(x_global,&x_local_arr) );
 #else
 	TRY( VecGetArray(x_global,&x_local_arr) );
 
@@ -141,7 +157,6 @@ int main( int argc, char *argv[] )
 	if(PRINT_VECTOR_CONTENT){
 		TRY( VecView(x_global, PETSC_VIEWER_STDOUT_WORLD) );
 	}
-
 
 	/* finalize Petsc */
 	PetscFinalize();
