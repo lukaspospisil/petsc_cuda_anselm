@@ -130,7 +130,7 @@ int main( int argc, char *argv[] )
 
 
 	/* the test: x_global = [0,1,2,3,4,5,...,n-1] */
-	/* get local array (for own kernels/OpenMPI fun) */
+	/* get local array (for own kernels/OpenMP fun) */
 	double *x_local_arr;
 
 #ifdef USE_CUDA
