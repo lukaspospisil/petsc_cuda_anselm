@@ -134,6 +134,7 @@ int main( int argc, char *argv[] )
 	double *x_local_arr;
 
 #ifdef USE_CUDA
+	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling CUDA kernel\n") );
 	TRY( VecCUDAGetArrayReadWrite(x_global,&x_local_arr) );
 
 	this_is_kernel<<<n_local, 1>>>(x_local_arr,idx_start,n_local); //TODO: compute optimal call
@@ -141,6 +142,7 @@ int main( int argc, char *argv[] )
 
 	TRY( VecCUDARestoreArrayReadWrite(x_global,&x_local_arr) );
 #else
+	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling OpenMPI parfor\n") );
 	TRY( VecGetArray(x_global,&x_local_arr) );
 
 	#pragma omp parallel for
