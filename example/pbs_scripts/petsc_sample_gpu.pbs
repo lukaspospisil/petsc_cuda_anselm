@@ -1,0 +1,23 @@
+#!/bin/bash 
+#PBS -N petsc_cuda_gpu
+#PBS -l select=1:ncpus=1
+#PBS -l walltime=00:01:00
+#PBS -q qexp
+#PBS -A IT4I-9-14
+
+module load GCCcore/4.9.3
+module load MPICH/3.2-GCC-4.9.3-2.25
+module load ifort/2016.1.150-GCC-4.9.3-2.25
+module load binutils/2.25-GCCcore-4.9.3 
+module load Bison/3.0.4-GCCcore-4.9.3
+
+module load cuda
+
+export PETSC_DIR=/home/pos220/playground/petsc 
+export PETSC_ARCH=arch-gnu-xc30-cuda-dbg
+
+cd /home/pos220/playground/petsc_cuda_anselm/example/build/
+
+mpiexec ./benchmark >> output.log
+
+

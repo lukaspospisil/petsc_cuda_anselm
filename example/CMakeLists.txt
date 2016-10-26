@@ -7,7 +7,7 @@
 project(PETSC_CUDA_TEST)
 cmake_minimum_required(VERSION 2.8)
 
-option(BENCHMARK_SEQ "BENCHMARK_SEQ" ON)
+option(BENCHMARK "BENCHMARK" ON)
 option(FIND_PETSC "FIND_PETSC" ON)
 option(USE_CUDA "USE_CUDA" OFF)
 
@@ -47,16 +47,16 @@ if(${USE_CUDA})
 	set(CUDA_CXX_FLAGS "${CUDA_CXX_FLAGS} -DUSE_CUDA")
 endif()
 
-if(${BENCHMARK_SEQ})
+if(${BENCHMARK})
 	if(${USE_CUDA})
 		# compile using cuda compiler
-		cuda_add_executable(benchmark_seq benchmark_seq.cu
+		cuda_add_executable(benchmark benchmark_seq.cu
 			OPTIONS "-arch=sm_35 --compiler-options \"${CUDA_CXX_FLAGS}\""
 			DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-		target_link_libraries(benchmark_seq ${PETSC_LIBRARIES})
+		target_link_libraries(benchmark ${PETSC_LIBRARIES})
 	else ()
 		# compile using standart c++ compiler
-		add_executable(benchmark_seq benchmark_seq.cpp)
-		target_link_libraries(benchmark_seq ${PETSC_LIBRARIES})
+		add_executable(benchmark benchmark_seq.cpp)
+		target_link_libraries(benchmark ${PETSC_LIBRARIES})
 	endif ()
 endif()
