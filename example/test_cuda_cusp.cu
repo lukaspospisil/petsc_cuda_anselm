@@ -6,8 +6,22 @@
 #define PRINT_VECTOR_CONTENT 1
 
 #ifdef USE_CUDA
+
+/* this is neccesary for calling Vec{CUDA,CUSP}{Get,Restore}ArrayReadWrite */
+#ifdef PETSC_HAVE_CUSP
+  /* taken from src/vec/vec/impls/seq/seqcusp/cuspvecimpl.h */
+#if defined(CUSP_VERSION) && CUSP_VERSION >= 500
+#include <cusp/blas/blas.h>
+#else
+#include <cusp/blas.h>
+#endif
+#define CUSPARRAY cusp::array1d<PetscScalar,cusp::device_memory>
+PETSC_EXTERN PetscErrorCode VecCUSPGetArrayReadWrite(Vec v, CUSPARRAY **a);
+PETSC_EXTERN PetscErrorCode VecCUSPRestoreArrayReadWrite(Vec v, CUSPARRAY **a);
+#else
 PETSC_EXTERN PetscErrorCode VecCUDAGetArrayReadWrite(Vec v, PetscScalar **a);
 PETSC_EXTERN PetscErrorCode VecCUDARestoreArrayReadWrite(Vec v, PetscScalar **a);
+#endif
 
 /* cuda error check */ 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
@@ -67,8 +81,13 @@ int main( int argc, char *argv[] )
 	Vec x_global; /* global data vector */
 	TRY( VecCreate(PETSC_COMM_WORLD,&x_global) );
 #ifdef USE_CUDA
+#ifdef PETSC_HAVE_CUSP
+	TRY( PetscPrintf(MPI_COMM_WORLD,"- using VECMPICUSP\n") );
+	TRY( VecSetType(x_global, VECMPICUSP) );
+#else
 	TRY( PetscPrintf(MPI_COMM_WORLD,"- using VECMPICUDA\n") );
 	TRY( VecSetType(x_global, VECMPICUDA) );
+#endif
 #else
 	TRY( PetscPrintf(MPI_COMM_WORLD,"- using VECMPI\n") );
 	TRY( VecSetType(x_global, VECMPI) );
@@ -136,12 +155,22 @@ int main( int argc, char *argv[] )
 
 #ifdef USE_CUDA
 	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling CUDA kernel\n") );
+#ifdef PETSC_HAVE_CUSP
+	CUSPARRAY *x_cusp;
+	TRY( VecCUSPGetArrayReadWrite(x_global,&x_cusp) );
+	x_local_arr = thrust::raw_pointer_cast(x_cusp->data());
+#else
 	TRY( VecCUDAGetArrayReadWrite(x_global,&x_local_arr) );
+#endif
 
 	this_is_kernel<<<n_local, 1>>>(x_local_arr,idx_start,n_local); //TODO: compute optimal call
 	gpuErrchk( cudaDeviceSynchronize() ); /* synchronize threads after computation */
 
+#ifdef PETSC_HAVE_CUSP
+	TRY( VecCUSPRestoreArrayReadWrite(x_global,&x_cusp) );
+#else
 	TRY( VecCUDARestoreArrayReadWrite(x_global,&x_local_arr) );
+#endif
 #else
 	TRY( PetscPrintf(MPI_COMM_WORLD,"- calling OpenMP parfor\n") );
 	TRY( VecGetArray(x_global,&x_local_arr) );
